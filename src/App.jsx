@@ -1,7 +1,28 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+//! pages....
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import Offers from './pages/Offers';
+import NotFound from './pages/NotFound';
+
 const App = () => {
     return (
         <>
-            <div className='mt-10 text-center text-red-900'>Raw React SetUp</div>
+            <Router>
+                <Routes>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/profile' element={<Profile />} />
+                    <Route path='/sign-in' element={<SignIn />} />
+                    <Route path='/sign-up' element={<SignUp />} />
+                    <Route path='/forgot-password' element={<ForgotPassword />} />
+                    <Route path='/offers' element={<Offers />} />
+                    <Route path='*' element={<NotFound />} />
+                </Routes>
+            </Router>
         </>
     );
 };
