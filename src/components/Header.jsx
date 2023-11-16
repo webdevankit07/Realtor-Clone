@@ -1,13 +1,11 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
     const pathMatchRoute = (route) => {
-        if (route === location.pathname) {
-            return true;
-        }
+        return route === location.pathname;
     };
 
     return (
@@ -24,24 +22,30 @@ const Header = () => {
                 <div>
                     <ul className='flex gap-x-10'>
                         <li
-                            className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
-                                pathMatchRoute('/') && 'text-black border-b-red-500'
+                            className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px]  ${
+                                pathMatchRoute('/')
+                                    ? 'text-black border-b-red-500'
+                                    : 'text-gray-400 border-b-transparent'
                             }`}
                             onClick={() => navigate('/')}
                         >
                             Home
                         </li>
                         <li
-                            className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
-                                pathMatchRoute('/offers') && 'text-black border-b-red-500'
+                            className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px]  ${
+                                pathMatchRoute('/offers')
+                                    ? 'text-black border-b-red-500'
+                                    : 'text-gray-400 border-b-transparent'
                             }`}
                             onClick={() => navigate('/offers')}
                         >
                             Offers
                         </li>
                         <li
-                            className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
-                                pathMatchRoute('/sign-in') && 'text-black border-b-red-500'
+                            className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px]  ${
+                                pathMatchRoute('/sign-in')
+                                    ? 'text-black border-b-red-500'
+                                    : 'text-gray-400 border-b-transparent'
                             }`}
                             onClick={() => navigate('/sign-in')}
                         >
