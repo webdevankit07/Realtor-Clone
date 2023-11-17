@@ -10,6 +10,9 @@ import Offers from './pages/Offers';
 import NotFound from './pages/NotFound';
 import Header from './components/Header';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App = () => {
     return (
         <>
@@ -25,6 +28,18 @@ const App = () => {
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </Router>
+            <ToastContainer
+                position='top-right'
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme='dark'
+            />
         </>
     );
 };
