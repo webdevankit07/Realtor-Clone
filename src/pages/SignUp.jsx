@@ -146,8 +146,8 @@ const SignUp = () => {
                         <div className='flex items-center my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300'>
                             <p className='mx-4 font-semibold text-center'>OR</p>
                         </div>
-                        <OAuth />
                     </form>
+                    <OAuth />
                 </div>
             </div>
         </section>
