@@ -12,8 +12,28 @@ import Header from './components/Header';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebaseAuth, setLoginState, setUserData } from './features/firebaseSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
+    const { login } = useSelector((state) => state.firebase);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        onAuthStateChanged(firebaseAuth, (user) => {
+            const userData = {
+                userName: user ? user.displayName : null,
+                userEmail: user ? user.email : null,
+                userId: user ? user.uid : null,
+                photoURL: user ? user.photoURL : null,
+            };
+            dispatch(setLoginState(user ? true : false));
+            dispatch(setUserData(userData));
+        });
+    }, [login, dispatch]);
+
     return (
         <>
             <Router>

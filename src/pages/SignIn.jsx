@@ -3,8 +3,11 @@ import { useState } from 'react';
 
 //! React icons...
 import { IoEye, IoEyeOff } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import { toast } from 'react-toastify';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { firebaseAuth } from '../features/firebaseSlice';
 
 const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -13,9 +16,22 @@ const SignIn = () => {
         password: '',
     });
     const { email, password } = formData;
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
+            if (user) {
+                navigate('/');
+            }
+        } catch (error) {
+            toast.error('Something wrong!', error);
+        }
     };
 
     return (
@@ -30,7 +46,7 @@ const SignIn = () => {
                     />
                 </div>
                 <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <input
                             required
                             type='email'

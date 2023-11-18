@@ -19,13 +19,28 @@ export const firebaseAuth = getAuth(firebaseApp);
 
 //! .................... Firebase SLice ...................
 const initialState = {
-    loading: false,
+    login: false,
+    userName: null,
+    userEmail: null,
+    userId: null,
+    photoURL: null,
 };
 const firebaseSlice = createSlice({
     name: 'firebaseSlice',
     initialState,
-    reducers: {},
+    reducers: {
+        setLoginState: (state, { payload }) => {
+            state.login = payload;
+        },
+        setUserData: (state, { payload }) => {
+            const { userName, userEmail, userId, photoURL } = payload;
+            state.userName = userName;
+            state.userEmail = userEmail;
+            state.userId = userId;
+            state.photoURL = photoURL;
+        },
+    },
 });
 
 export default firebaseSlice.reducer;
-// export const {} = firebaseSlice.actions;
+export const { setLoginState, setUserData } = firebaseSlice.actions;
