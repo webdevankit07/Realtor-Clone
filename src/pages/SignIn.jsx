@@ -28,9 +28,10 @@ const SignIn = () => {
             const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
             if (user) {
                 navigate('/');
+                toast.error('Sign In Successful');
             }
         } catch (error) {
-            toast.error('Something wrong!', error);
+            toast.error('Something wrong!');
         }
     };
 
