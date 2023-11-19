@@ -1,11 +1,14 @@
-import { signOut } from 'firebase/auth';
+import { signOut, updateProfile } from 'firebase/auth';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { firebaseAuth } from '../features/firebaseSlice';
+import { fireStoreDB, firebaseAuth } from '../features/firebaseSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const Profile = () => {
-    const { userName, userEmail } = useSelector((state) => state.firebase);
+    const { userName, userEmail, userId } = useSelector((state) => state.firebase);
+    const [changeDetail, setChangeDetail] = useState(false);
     const [formData, setFormData] = useState({
         name: userName,
         email: userEmail,
@@ -22,6 +25,26 @@ const Profile = () => {
         navigate('/');
     };
 
+    const handleSubmit = async () => {
+        try {
+            if (userName !== name) {
+                //? update Displayname in firebase auth
+                await updateProfile(firebaseAuth.currentUser, {
+                    displayName: name,
+                });
+
+                //? update name in the firestore
+                const docRef = doc(fireStoreDB, 'users', userId);
+                await updateDoc(docRef, {
+                    name,
+                });
+            }
+            toast.success('Profile Details updated');
+        } catch (error) {
+            toast.error('Could not update Profile details');
+        }
+    };
+
     return (
         <>
             <section className='max-w-6xl'>
@@ -35,8 +58,10 @@ const Profile = () => {
                             name='name'
                             value={name}
                             onChange={handleChange}
-                            disabled
-                            className='w-full px-4 py-2 text-xl text-gray-700 transition ease-in-out bg-white border border-gray-300 rounded'
+                            disabled={!changeDetail}
+                            className={`w-full px-4 py-2 text-xl text-gray-700 transition ease-in-out border border-gray-300 rounded bg-white ${
+                                changeDetail && 'bg-red-200 focus:bg-red-200'
+                            }`}
                         />
 
                         {/*//? Email Input  */}
@@ -50,11 +75,17 @@ const Profile = () => {
                             className='w-full px-4 py-2 my-6 text-xl text-gray-700 transition ease-in-out bg-white border border-gray-300 rounded'
                         />
 
-                        <div className='flex justify-between text-sm whitespace-nowrap md:text-lg'>
+                        <div className='flex justify-between text-base whitespace-nowrap md:text-lg'>
                             <p className='flex items-center gap-1'>
                                 Do you want to change your name?
-                                <span className='text-red-600 transition duration-200 ease-in-out cursor-pointer hover:text-red-700 active:text-red-800'>
-                                    Edit
+                                <span
+                                    className='text-red-600 transition duration-200 ease-in-out cursor-pointer hover:text-red-700 active:text-red-800'
+                                    onClick={() => {
+                                        changeDetail && handleSubmit();
+                                        setChangeDetail((prev) => !prev);
+                                    }}
+                                >
+                                    {changeDetail ? 'Apply Change' : 'Edit'}
                                 </span>
                             </p>
                             <p
