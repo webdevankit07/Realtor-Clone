@@ -47,7 +47,7 @@ const Profile = () => {
 
     return (
         <>
-            <section className='max-w-6xl'>
+            <section className='max-w-6xl mx-auto'>
                 <h1 className='mt-6 text-3xl font-bold text-center'>My Profile</h1>
                 <div className='w-full md:w-[70%] lg:w-[50%] mt-6 px-3 mx-auto'>
                     <form>

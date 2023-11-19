@@ -1,6 +1,8 @@
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Header = () => {
+    const { login } = useSelector((state) => state.firebase);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -43,13 +45,13 @@ const Header = () => {
                         </li>
                         <li
                             className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px]  ${
-                                pathMatchRoute('/sign-in')
+                                pathMatchRoute('/sign-in') || pathMatchRoute('/profile')
                                     ? 'text-black border-b-red-500'
                                     : 'text-gray-400 border-b-transparent'
                             }`}
-                            onClick={() => navigate('/sign-in')}
+                            onClick={() => navigate(login ? '/profile' : '/sign-in')}
                         >
-                            Sign In
+                            {login ? 'Profile' : 'Sign In'}
                         </li>
                     </ul>
                 </div>
