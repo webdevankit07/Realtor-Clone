@@ -14,8 +14,14 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { firebaseAuth, setLoginState, setUserData } from './features/firebaseSlice';
+import {
+    firebaseAuth,
+    setLoadingState,
+    setLoginState,
+    setUserData,
+} from './features/firebaseSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => {
     const { login } = useSelector((state) => state.firebase);
@@ -23,6 +29,7 @@ const App = () => {
 
     useEffect(() => {
         onAuthStateChanged(firebaseAuth, (user) => {
+            dispatch(setLoadingState(true));
             const userData = {
                 userName: user ? user.displayName : null,
                 userEmail: user ? user.email : null,
@@ -31,6 +38,7 @@ const App = () => {
             };
             dispatch(setLoginState(user ? true : false));
             dispatch(setUserData(userData));
+            dispatch(setLoadingState(false));
         });
     }, [login, dispatch]);
 
@@ -40,7 +48,9 @@ const App = () => {
                 <Header />
                 <Routes>
                     <Route path='/' element={<Home />} />
-                    <Route path='/profile' element={<Profile />} />
+                    <Route path='/profile' element={<PrivateRoute />}>
+                        <Route path='/profile' element={<Profile />} />
+                    </Route>
                     <Route path='/sign-in' element={<SignIn />} />
                     <Route path='/sign-up' element={<SignUp />} />
                     <Route path='/forgot-password' element={<ForgotPassword />} />
