@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyCqcBXc5xnaJaTJq7beA_f1I0GIBiE5Zx0',
@@ -16,6 +17,7 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const fireStoreDB = getFirestore(firebaseApp);
 export const firebaseAuth = getAuth(firebaseApp);
+export const firebaseStorage = getStorage(firebaseApp);
 
 //! .................... Firebase SLice ...................
 const initialState = {

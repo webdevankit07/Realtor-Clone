@@ -1,6 +1,17 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import Spinner from '../components/Spinner';
+import { v4 as uuidv4 } from 'uuid';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { fireStoreDB, firebaseStorage } from '../features/firebaseSlice';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const CreateListing = () => {
+    const navigate = useNavigate();
+    const { userId } = useSelector((state) => state.firebase);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         type: 'sell',
         name: '',
@@ -13,6 +24,9 @@ const CreateListing = () => {
         offer: false,
         regularPrice: 0,
         discountedPrice: 0,
+        lat: 0,
+        long: 0,
+        images: {},
     });
     const {
         type,
@@ -26,16 +40,76 @@ const CreateListing = () => {
         offer,
         regularPrice,
         discountedPrice,
+        lat,
+        long,
+        images,
     } = formData;
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    //! image upload to firebase cloud storage...
+    const storeImage = async (image) => {
+        const fileName = `${userId}-${image.name}-${uuidv4()}`;
+        const storageRef = ref(firebaseStorage, `images/${fileName}`);
+        const uploadImageResult = await uploadBytes(storageRef, image);
+        const imgPath = uploadImageResult.ref._location.path_;
+        const imgUrl = await getDownloadURL(ref(firebaseStorage, imgPath));
+        return imgUrl;
     };
+
+    const handleChange = (e) => {
+        let boolean = e.target.value === 'true' ? true : e.target.value === 'false' ? false : null;
+
+        //! Files
+        if (e.target.files) {
+            setFormData((prev) => ({ ...prev, [e.target.name]: e.target.files }));
+        }
+        //! Text/Boolean/Number
+        if (!e.target.files) {
+            setFormData((prev) => ({ ...prev, [e.target.name]: boolean ?? e.target.value }));
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        if (discountedPrice >= regularPrice) {
+            setLoading(false);
+            toast.error('Discounted price must be less than regular price');
+            return;
+        }
+        if (images.length > 6) {
+            setLoading(false);
+            toast.error('Maximum 6 images are allowed');
+            return;
+        }
+
+        const imgUrls = await Promise.all([...images].map((image) => storeImage(image))).catch(
+            (err) => {
+                toast.error('Images not uploaded');
+                console.log(err);
+                return;
+            }
+        );
+
+        const formDataCopy = {
+            ...formData,
+            imgUrls,
+            timestamp: serverTimestamp(),
+        };
+        delete formDataCopy.images;
+        !formDataCopy.offer && delete formDataCopy.discountedPrice;
+
+        const document = await addDoc(collection(fireStoreDB, 'listings'), formDataCopy);
+        setLoading(false);
+        toast.success('Listings added successfully');
+        navigate(`/categogry/${formDataCopy.type}/${document.id}`);
+    };
+
+    if (loading) return <Spinner />;
 
     return (
         <main className='max-w-md px-2 mx-auto'>
             <h1 className='mt-6 text-3xl font-bold text-center'>Create a Listing</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <p className='mt-6 text-lg font-semibold'>Sell / Rent</p>
                     <div className='flex gap-6'>
@@ -170,6 +244,34 @@ const CreateListing = () => {
                         required
                         className='w-full px-4 py-2 mb-6 text-xl text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded focus:text-gray-700 focus:bg-white focus:border-slate-600'
                     />
+                </div>
+                <div className='flex gap-6 mb-6'>
+                    <div>
+                        <p className='text-lg font-semibold'>Latitude</p>
+                        <input
+                            type='text'
+                            name='lat'
+                            value={lat}
+                            required
+                            min={-90}
+                            max={90}
+                            onChange={handleChange}
+                            className='w-full px-4 py-2 text-xl text-center text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded focus:bg-white focus:text-gray-700 focus:border-slate-600'
+                        />
+                    </div>
+                    <div>
+                        <p className='text-lg font-semibold'>Longitude</p>
+                        <input
+                            type='text'
+                            name='long'
+                            value={long}
+                            required
+                            min={-180}
+                            max={180}
+                            onChange={handleChange}
+                            className='w-full px-4 py-2 text-xl text-center text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded focus:bg-white focus:text-gray-700 focus:border-slate-600'
+                        />
+                    </div>
                 </div>
                 <div>
                     <p className='text-lg font-semibold'>Description</p>
