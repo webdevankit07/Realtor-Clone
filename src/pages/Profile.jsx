@@ -2,9 +2,12 @@ import { signOut, updateProfile } from 'firebase/auth';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { fireStoreDB, firebaseAuth } from '../features/firebaseSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { doc, updateDoc } from 'firebase/firestore';
+
+//!recat Icons..
+import { FcHome } from 'react-icons/fc';
 
 const Profile = () => {
     const { userName, userEmail, userId } = useSelector((state) => state.firebase);
@@ -96,6 +99,18 @@ const Profile = () => {
                             </p>
                         </div>
                     </form>
+                    <button
+                        type='submit'
+                        className='w-full py-3 my-6 text-sm font-medium text-white uppercase transition duration-150 ease-in-out bg-blue-600 rounded shadow-md cursor-pointer px-7 hover:bg-blue-700 hover:shadow-lg active:bg-blue-800'
+                    >
+                        <Link
+                            to={'/create-listing'}
+                            className='flex items-center justify-center gap-2'
+                        >
+                            <FcHome className='p-1 text-3xl bg-red-200 border-2 rounded-full' />{' '}
+                            Sell or rent your home
+                        </Link>
+                    </button>
                 </div>
             </section>
         </>

@@ -22,6 +22,7 @@ import {
 } from './features/firebaseSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import PrivateRoute from './components/PrivateRoute';
+import CreateListing from './pages/CreateListing';
 
 const App = () => {
     const { login } = useSelector((state) => state.firebase);
@@ -55,6 +56,7 @@ const App = () => {
                     <Route path='/sign-up' element={<SignUp />} />
                     <Route path='/forgot-password' element={<ForgotPassword />} />
                     <Route path='/offers' element={<Offers />} />
+                    <Route path='/create-listing' element={<CreateListing />} />
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </Router>
